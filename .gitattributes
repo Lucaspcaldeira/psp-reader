@@ -1,0 +1,20 @@
+# Fim de linha: LF em tudo, inclusive na copia de trabalho no Windows.
+#
+# Nao e preferencia de estilo. O build roda dentro de um container Linux lendo
+# esta mesma pasta por bind mount, e o `make` do container QUEBRA com Makefile em
+# CRLF: o \r entra no fim de cada linha de receita e o shell tenta executar um
+# comando com um caractere invisivel no nome. O erro que aparece nao menciona
+# fim de linha em momento nenhum.
+#
+# Com o padrao do Git no Windows (core.autocrlf=true), um `clone` limpo traria
+# exatamente isso. Esta linha e o que faz o repositorio compilar depois de
+# clonado numa maquina que nao seja a de quem escreveu.
+* text=auto eol=lf
+
+# Binarios: nunca tocar.
+*.ttf  binary
+*.pbp  binary
+*.PBP  binary
+*.pdf  binary
+*.epub binary
+*.png  binary

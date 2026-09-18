@@ -1,0 +1,9 @@
+# Imagem derivada com ferramentas de host, para testar os modulos portaveis
+# (src/pdf, src/read) sem PSP:
+#   gcc/musl-dev  -> compilar para a arquitetura do host
+#   zlib-dev      -> pdf_filt.c usa zlib para FlateDecode
+#   compiler-rt   -> runtime de -fsanitize=address,undefined
+#
+# A imagem base e Alpine, entao o gerenciador e apk (nao apt).
+FROM pspdev/pspdev:latest
+RUN apk add --no-cache gcc musl-dev zlib-dev compiler-rt

@@ -1,0 +1,15 @@
+*.o
+*.a
+*.elf
+*.prx
+*.SFO
+PARAM.SFO
+EBOOT.PBP
+dist/
+
+# data/ NAO e ignorado: a fonte Literata.ttf faz parte do repositorio (OFL 1.1
+# permite redistribuir) e sem ela o app nao desenha nada. Difere do midnight,
+# onde data/ era saida de conversores e podia ser regerada.
+
+# Corpus de teste: PDFs reais, nao redistribuiveis. Ver PLAN.md secao 10.
+testdata/

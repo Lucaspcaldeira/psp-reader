@@ -1,0 +1,71 @@
+PSP Reader — atribuições de terceiros
+=====================================
+
+O código deste projeto é MIT (ver LICENSE). Ele é compilado e distribuído
+junto com os componentes abaixo, cada um sob sua própria licença permissiva.
+Nenhum deles é copyleft, e nenhum altera a licença do nosso código.
+
+Este arquivo é a lista de verificação de licenças do projeto: qualquer
+dependência nova entra aqui ANTES de entrar no Makefile.
+
+
+FreeType 2
+----------
+Rasterização de glifos. Ligado estaticamente ao EBOOT.
+Licença: FreeType License (FTL), estilo BSD, exige atribuição.
+https://freetype.org/
+
+    Portions of this software are copyright (C) 2026 The FreeType Project
+    (www.freetype.org). All rights reserved.
+
+
+zlib
+----
+Descompressão. Três usos independentes: o FreeType, o filtro FlateDecode do
+parser de PDF, e o deflate dos membros de ZIP na leitura de EPUB.
+Licença: zlib License (permissiva).
+https://zlib.net/
+
+
+libpng
+------
+Dependência transitiva do FreeType nesta build do pspdev.
+Licença: PNG Reference Library License v2 (permissiva).
+http://www.libpng.org/
+
+
+bzip2
+-----
+Dependência transitiva do FreeType nesta build do pspdev.
+Licença: BSD-style.
+
+
+PSPSDK
+------
+SDK de desenvolvimento para PSP (sceGu, sceCtrl, sceIo).
+Licença: BSD-style.
+https://github.com/pspdev
+
+
+Literata
+--------
+Tipografia de leitura, distribuída em data/Literata.ttf.
+Licença: SIL Open Font License 1.1 (texto completo em data/Literata-OFL.txt).
+Copyright 2017 The Literata Project Authors.
+https://github.com/googlefonts/literata
+
+A OFL permite embutir e redistribuir a fonte, inclusive em software
+comercial. Ela não se propaga para o nosso código: apenas exige que a fonte
+em si continue sob OFL e que este aviso acompanhe a distribuição.
+
+
+Componentes deliberadamente NÃO usados
+--------------------------------------
+Registrado para que a decisão não seja reaberta por engano:
+
+  MuPDF      AGPL-3.0 ou licença comercial paga. Linká-lo obrigaria o projeto
+             inteiro a ser AGPL. Ver PLAN.md seção 2.
+  Bookr      GPLv2. Nem o código nem trechos dele.
+  PSPPDF     GPLv2.
+  intraFont  CC BY-SA 3.0, share-alike. Substituído por FreeType, que além de
+             ser permissivo resolve o problema de UTF-8.
