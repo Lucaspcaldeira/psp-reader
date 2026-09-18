@@ -1,0 +1,65 @@
+name: Uma página saiu errada
+description: Texto embaralhado, parágrafo quebrado no lugar errado, palavra colada, capítulo faltando
+labels: [reflow]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        O reflow é **heurística, não algoritmo** — não existe no arquivo marca
+        nenhuma dizendo onde o parágrafo termina, só coordenadas. Então "a
+        página 84 ficou estranha" não aponta para nenhuma regra, e os números
+        abaixo apontam.
+
+        Na tela de leitura, aperte **△** para abrir o painel de diagnóstico.
+
+  - type: textarea
+    id: diagnostico
+    attributes:
+      label: Painel de diagnóstico (△)
+      description: As quatro linhas do painel, como aparecem.
+      placeholder: |
+        origem 30 linhas, 0 fora   1 col   0 hifens
+        corpo 15.0pt  entrelinha 18.0pt  margens 77-535
+        9 paragrafos -> 36 linhas de tela
+        412 runs, 0 vert, 0 sem unicode   84ms   1008 KB
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: onde
+    attributes:
+      label: Onde
+      description: Formato, e o número da unidade e da tela que a barra de topo mostra.
+      placeholder: "PDF, p84/229, tela 3/6"
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que apareceu, e o que deveria aparecer
+      description: |
+        Se der, transcreva o trecho como saiu e como está no livro. É o que
+        permite reproduzir sem ter o arquivo.
+    validations:
+      required: true
+
+  - type: textarea
+    id: arquivo
+    attributes:
+      label: O arquivo
+      description: |
+        Quem o gerou, se você souber (Calibre, InDesign, scanner, Word). Não
+        anexe o livro se ele não for de domínio público.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Antes de abrir:** vale conferir se o caso já está nas
+        [limitações conhecidas](../../blob/main/README.md#limitações-conhecidas).
+        PDF escaneado, tabela e imagem são consequências declaradas da
+        arquitetura, não defeitos.

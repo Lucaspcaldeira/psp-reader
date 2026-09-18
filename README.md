@@ -1,14 +1,64 @@
 # PSP Reader
 
-Leitor de livros digitais para PlayStation Portable. Homebrew em C sobre PSPSDK,
-com renderização `sceGu` nativa e tipografia FreeType.
+**Um leitor de livros para PlayStation Portable que trata a tela de 480x272 como
+uma página, e não como uma janelinha sobre uma folha A4.**
 
-> **Estado: Etapa 4 de 6 — aguardando teste em hardware.** Lê **PDF, EPUB e
-> TXT**, com reflow: o texto é remontado em parágrafos lógicos e repaginado
-> para 480x272, então o livro é lido virando telas, não rolando linhas de A4.
-> Guarda **onde você parou** em cada livro, tem **três temas** (incluindo
-> noturno) e corpo de fonte ajustável sem perder o lugar da leitura. Ver
-> [PLAN.md](PLAN.md) para as decisões técnicas e o roteiro.
+Lê **EPUB**, **PDF** e **TXT**. O texto é remontado em parágrafos lógicos e
+repaginado para a tela, então se lê virando telas inteiras — com palavra
+hifenizada inteira de volta, cabeçalho e número de página fora do caminho, e o
+corpo da fonte no tamanho que você quiser.
+
+[![testes](https://github.com/Lucaspcaldeira/psp-reader/actions/workflows/tests.yml/badge.svg)](https://github.com/Lucaspcaldeira/psp-reader/actions/workflows/tests.yml)
+[![licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)](LICENSE)
+[![plataforma: PSP](https://img.shields.io/badge/plataforma-PSP--2000%2F3000-black.svg)](#como-instalar-usuário-final)
+[![formatos](https://img.shields.io/badge/formatos-EPUB%20%C2%B7%20PDF%20%C2%B7%20TXT-green.svg)](#formatos)
+
+---
+
+## O problema
+
+A tela do PSP tem 480x272. Uma página A4 tem 595x842 pontos, com o texto em
+coordenadas absolutas. Reduzir a página inteira para caber deixa o corpo do
+texto em cerca de **4 pixels** — ilegível. A saída óbvia é zoom e *pan* em duas
+dimensões, que foi o que os leitores de PSP anteriores fizeram, e que não é ler
+um livro: é navegar num mapa.
+
+Este projeto faz o contrário. Extrai o texto com as posições, **reconstrói os
+parágrafos** e repagina para 480x272 com quebra de linha por largura real de
+glifo. É o que um Kindle faz.
+
+Em EPUB o problema nem existe — o formato já traz `<p>` dizendo onde o parágrafo
+termina. Em PDF não existe marca nenhuma: só há coordenadas, e a resposta sai de
+heurística sobre elas. Essa diferença é a parte mais interessante do código, e
+está documentada em [PLAN.md](PLAN.md).
+
+---
+
+## Como fica
+
+Uma página de PDF diagramada para papel, depois do reflow e repaginada para a
+tela do console. Saída real da ferramenta de teste (`.\test.ps1 pdfreflow`), não
+uma maquete:
+
+```
+    +-----------------------------------------------------+ tela 2/6
+    |    Ao estudar a questão do que nos afasta de nosso estado
+    | natural de compaixão, identifiquei algumas formas
+    | específicas de linguagem e comunicação que acredito
+    | contribuírem para nosso comportamento violento em
+    | relação aos outros e a nós mesmos. Para designar essas
+    | formas de comunicação, utilizo a expressão
+    | “comunicação alienante da vida”.
+    +-----------------------------------------------------+
+```
+
+No papel, esse parágrafo eram seis linhas justificadas em 458 pontos de largura;
+na tela, sete linhas em 452 pixels, quebradas onde a fonte de leitura manda.
+Repare na pontuação tipográfica preservada — aspas curvas, acentuação — que é o
+que se perde quando um leitor converte para Latin-1 pelo caminho.
+
+> **Capturas de tela do console:** ainda não há. Se você rodar no seu PSP e
+> quiser contribuir com uma, é bem-vinda.
 
 ---
 
@@ -306,8 +356,8 @@ Nada precisa ser instalado no Windows além do Docker: o toolchain roda no
 container `pspdev/pspdev`, e o `build.ps1` cuida de baixá-lo na primeira vez.
 
 ```powershell
-git clone <url-do-repositorio>
-cd ereader
+git clone https://github.com/Lucaspcaldeira/psp-reader.git
+cd psp-reader
 .\build.ps1          # -> EBOOT.PBP
 .\build.ps1 dist     # -> dist\EREADER\ pronto para copiar
 .\deploy.ps1         # -> copia pro PSP e verifica o hash

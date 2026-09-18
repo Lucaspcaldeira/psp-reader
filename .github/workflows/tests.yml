@@ -1,0 +1,64 @@
+# Testes de host: os modulos portaveis, sem PSP e sem emulador.
+#
+# Este workflow existe porque a maior parte do codigo do projeto - os tres
+# parsers, o reflow e a paginacao - e C99 puro sobre uma interface de I/O de tres
+# funcoes, e roda em qualquer lugar que tenha gcc e zlib. So gfx, input, font e
+# fs tocam o console, e esses nao entram aqui.
+#
+# NAO compila o EBOOT. Isso exigiria o toolchain do PSPSDK, que e outra ordem de
+# grandeza de tempo e nao pega nenhum defeito que estes testes nao peguem: o que
+# quebra neste projeto e heuristica de reflow e parsing de formato, nao ligacao.
+#
+# Roda com ASan e UBSan ligados - e por isso que os testes valem: um estouro de
+# indice no parser vira falha de CI em vez de um travamento no console de alguem.
+
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  host:
+    name: suites de host (ASan + UBSan)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: instalar zlib
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zlib1g-dev
+
+      - name: compilar e rodar
+        run: |
+          set -eu
+
+          PDF="src/pdf/pdf_arena.c src/pdf/pdf_io.c src/pdf/pdf_obj.c \
+               src/pdf/pdf_lex.c src/pdf/pdf_filt.c src/pdf/pdf_doc.c \
+               src/pdf/pdf_font.c src/pdf/pdf_text.c src/read/utf8.c"
+          READ="src/read/textlines.c src/read/reflow.c src/read/layout.c \
+                src/read/txt.c src/read/zip.c src/read/epub.c src/read/doc.c"
+
+          # Espelha as suites de test.ps1 que nao precisam de arquivo de corpus.
+          # As que precisam (pdf, pdftext, pdfreflow, epubdump) ficam de fora: os
+          # livros nao sao redistribuiveis e nao estao no repositorio.
+          run_suite() {
+            name="$1"; shift
+            echo "== $name =="
+            gcc -Wall -Wextra -Werror -std=c99 -g \
+                -fsanitize=address,undefined \
+                -fno-sanitize-recover=all \
+                -Iinclude -Itools -o "/tmp/t_$name" "tools/test_$name.c" "$@" -lm
+            "/tmp/t_$name"
+          }
+
+          run_suite utf8     src/read/utf8.c
+          run_suite pdfcore  $PDF -lz
+          run_suite reflow   $PDF $READ -lz
+          run_suite txt      $PDF $READ tools/host_io.c -lz
+          run_suite epub     $PDF $READ tools/host_io.c -lz
+          run_suite progress src/read/progress.c tools/host_fs.c
